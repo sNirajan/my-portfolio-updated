@@ -8,12 +8,23 @@ export default function Contact() {
   const ref = useScrollReveal();
   const [submitted, setSubmitted] = useState(false);
 
-  const handleSubmit = (e) => {
+  const FORMSPREE_ID = "mwvnlqgd"; 
+
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    // Replace with your EmailJS integration
-    setSubmitted(true);
-    setTimeout(() => setSubmitted(false), 3000);
-    e.target.reset();
+    const form = e.target;
+
+    const res = await fetch(`https://formspree.io/f/${FORMSPREE_ID}`, {
+      method: "POST",
+      headers: { Accept: "application/json" },
+      body: new FormData(form),
+    });
+
+    if (res.ok) {
+      setSubmitted(true);
+      form.reset();
+      setTimeout(() => setSubmitted(false), 4000);
+    }
   };
 
   return (
@@ -68,10 +79,15 @@ export default function Contact() {
           </div>
 
           <form className={`${styles.form} rv rv-d3`} onSubmit={handleSubmit}>
-            <input type="text" placeholder="Name" required />
-            <input type="email" placeholder="Email" required />
-            <textarea placeholder="Message" required />
-            <button type="submit" className="btn btn-fill" style={{ width: "100%", justifyContent: "center" }}>
+            <input type="text" name="name" placeholder="Name" required />
+            <input type="email" name="email" placeholder="Email" required />
+            <textarea name="message" placeholder="Message" required />
+            <button
+              type="submit"
+              className="btn btn-fill"
+              style={{ width: "100%", justifyContent: "center" }}
+              disabled={submitted}
+            >
               {submitted ? "Message sent!" : "Send message"}
             </button>
           </form>
